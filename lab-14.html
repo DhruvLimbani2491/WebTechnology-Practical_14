@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Space Exploration Quiz</title>
+<style>
+    /* Modern reset and space-themed background */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    /* Glassmorphism styling for the quiz card */
+    .quiz-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        max-width: 500px;
+        width: 90%;
+    }
+    
+    h2 {
+        font-size: 1.4em;
+        margin-top: 0;
+        margin-bottom: 25px;
+        line-height: 1.5;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Option buttons styling - sleek and modern */
+    .option {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 12px 0;
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        text-align: left;
+        font-size: 1.05em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .option:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #ffffff;
+        transform: translateY(-2px);
+    }
+    
+    /* Next button styling - accented and glowing */
+    #next-btn {
+        margin-top: 25px;
+        padding: 12px 25px;
+        background: #00d2ff;
+        background: linear-gradient(to right, #3a7bd5, #00d2ff);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        display: none; /* Hidden until an answer is selected */
+        transition: box-shadow 0.3s ease;
+        width: 100%;
+    }
+    
+    #next-btn:hover {
+        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+    }
+    
+    /* Final result text */
+    #result {
+        font-size: 1.8em;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.4;
+    }
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-block">
+        <h2 id="question">Question text will load here</h2>
+        <div id="options">
+            <!-- JavaScript will inject buttons here -->
+        </div>
+        <button id="next-btn" onclick="nextQuestion()">Next Question 🚀</button>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+    // Array of Space Exploration questions
+    const quizData = [
+        {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Venus", "Mars", "Jupiter", "Saturn"],
+            answer: "Mars"
+        },
+        {
+            question: "Who was the first human to travel into space?",
+            options: ["Neil Armstrong", "Buzz Aldrin", "Yuri Gagarin", "John Glenn"],
+            answer: "Yuri Gagarin"
+        },
+        {
+            question: "What is the largest planet in our Solar System?",
+            options: ["Earth", "Saturn", "Jupiter", "Neptune"],
+            answer: "Jupiter"
+        },
+        {
+            question: "Which galaxy is home to our Solar System?",
+            options: ["Andromeda", "Milky Way", "Whirlpool", "Sombrero"],
+            answer: "Milky Way"
+        },
+        {
+            question: "What was the name of the first artificial Earth satellite?",
+            options: ["Apollo 11", "Voyager 1", "Hubble", "Sputnik 1"],
+            answer: "Sputnik 1"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // DOM Elements
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const resultEl = document.getElementById("result");
+    const quizBlock = document.getElementById("quiz-block");
+
+    // Initialize the first question
+    function loadQuestion() {
+        nextBtn.style.display = "none";
+        optionsEl.innerHTML = "";
+        
+        const currentData = quizData[currentQuestionIndex];
+        questionEl.innerText = `Q${currentQuestionIndex + 1}. ${currentData.question}`;
+
+        currentData.options.forEach(option => {
+            const button = document.createElement("button");
+            button.innerText = option;
+            button.classList.add("option");
+            button.onclick = () => selectAnswer(button, option, currentData.answer);
+            optionsEl.appendChild(button);
+        });
+    }
+
+    // Handle answer selection
+    function selectAnswer(selectedButton, selectedText, correctText) {
+        const allButtons = document.querySelectorAll(".option");
+        
+        // Disable all buttons to prevent multiple clicks
+        allButtons.forEach(btn => btn.disabled = true);
+
+        // Check if correct
+        if (selectedText === correctText) {
+            selectedButton.style.background = "rgba(40, 167, 69, 0.8)"; // Green
+            selectedButton.style.borderColor = "#28a745";
+            score++;
+        } else {
+            selectedButton.style.background = "rgba(220, 53, 69, 0.8)"; // Red
+            selectedButton.style.borderColor = "#dc3545";
+            
+            // Highlight the correct answer automatically
+            allButtons.forEach(btn => {
+                if (btn.innerText === correctText) {
+                    btn.style.background = "rgba(40, 167, 69, 0.8)";
+                    btn.style.borderColor = "#28a745";
+                }
+            });
+        }
+        
+        // Show the next button
+        nextBtn.style.display = "block";
+    }
+
+    // Move to next question or show results
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            quizBlock.style.display = "none";
+            resultEl.innerHTML = `Mission Complete! 🌠<br><br>You scored ${score} out of ${quizData.length}.`;
+        }
+    }
+
+    // Start quiz on load
+    loadQuestion();
+</script>
+
+</body>
+</html>
